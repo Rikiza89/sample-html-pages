@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fa; }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+            min-width: 256px; /* md:w-64 */
+        }
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        /* Mock Chart Styling */
+        .chart-bar {
+            height: 100px; /* Fixed height for visualization area */
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+        }
+        .bar-segment {
+            transition: height 0.5s ease-out;
+            background-color: #3b82f6; /* Blue-500 */
+            width: 10px;
+            border-radius: 2px 2px 0 0;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar bg-gray-800 text-white shadow-xl fixed md:sticky top-0 left-0 h-full z-40 transform -translate-x-full md:translate-x-0">
+        <div class="p-6">
+            <h1 class="text-3xl font-extrabold text-blue-400 mb-8">
+                App<span class="text-white">Metrics</span>
+            </h1>
+            <nav class="space-y-4">
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-blue-600 font-semibold shadow-md">
+                    <!-- Icon placeholder -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M12 20.354a4 4 0 110-5.292M18 10a4 4 0 010 8"></path></svg>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-3H17v3zM5 20h5v-3H5v3zM1 12h5V9H1v3zM11 12h5V9H11v3z"></path></svg>
+                    <span>Users</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+        <div class="absolute bottom-0 w-full p-4 border-t border-gray-700">
+            <div class="flex items-center space-x-3 text-sm">
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold">JD</div>
+                <div>
+                    <p class="font-semibold">Jane Doe</p>
+                    <p class="text-xs text-gray-400">Analyst</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content flex-1 p-4 md:p-8">
+        <!-- Top Bar / Header -->
+        <header class="flex justify-between items-center bg-white p-4 rounded-xl shadow-md mb-8">
+            <button id="menu-toggle" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+            <h2 class="text-3xl font-bold text-gray-800 hidden md:block">Analytics Overview</h2>
+            <div class="flex items-center space-x-4">
+                <input type="date" value="2024-10-17" class="p-2 border rounded-lg text-gray-600 focus:ring-blue-500 focus:border-blue-500">
+                <button class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405C18.21 15.064 18 14.568 18 14v-3c0-2.206-1.794-4-4-4s-4 1.794-4 4v3c0 .568-.21 1.064-.595 1.595L4 17h5"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Card 1 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                <p class="text-sm font-medium text-gray-500">Total Revenue</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">$12,450</p>
+                <p class="text-xs text-green-500 mt-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    +2.5% vs last month
+                </p>
+            </div>
+            <!-- Card 2 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-yellow-500">
+                <p class="text-sm font-medium text-gray-500">New Users</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">4,120</p>
+                <p class="text-xs text-yellow-500 mt-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4m16 0l-4-4m4 4l-4 4"></path></svg>
+                    0% (Steady)
+                </p>
+            </div>
+            <!-- Card 3 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
+                <p class="text-sm font-medium text-gray-500">Active Bugs</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">18</p>
+                <p class="text-xs text-red-500 mt-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                    -5.1% vs last week
+                </p>
+            </div>
+            <!-- Card 4 -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
+                <p class="text-sm font-medium text-gray-500">Engagement Score</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">87.5%</p>
+                <p class="text-xs text-blue-500 mt-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    +0.8% (Improving)
+                </p>
+            </div>
+        </div>
+
+        <!-- Charts and Tables Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Large Chart Area (2/3 width) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Monthly Performance</h3>
+                <!-- Mock Bar Chart -->
+                <div class="chart-bar flex justify-between items-end p-4">
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 70px;" title="Jan"></div>
+                        <span class="text-xs text-gray-500 mt-2">Jan</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 85px;" title="Feb"></div>
+                        <span class="text-xs text-gray-500 mt-2">Feb</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 60px;" title="Mar"></div>
+                        <span class="text-xs text-gray-500 mt-2">Mar</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 95px;" title="Apr"></div>
+                        <span class="text-xs text-gray-500 mt-2">Apr</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 50px;" title="May"></div>
+                        <span class="text-xs text-gray-500 mt-2">May</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 100px; background-color: #f59e0b;" title="Jun"></div>
+                        <span class="text-xs text-gray-500 mt-2">Jun</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 80px;" title="Jul"></div>
+                        <span class="text-xs text-gray-500 mt-2">Jul</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 75px;" title="Aug"></div>
+                        <span class="text-xs text-gray-500 mt-2">Aug</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 90px;" title="Sep"></div>
+                        <span class="text-xs text-gray-500 mt-2">Sep</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="bar-segment" style="height: 110px;" title="Oct"></div>
+                        <span class="text-xs text-gray-500 mt-2">Oct</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity (1/3 width) -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Recent Activity</h3>
+                <ul class="space-y-4 text-sm text-gray-600">
+                    <li class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <p><span class="font-medium text-gray-800">New Signup:</span> Alex M. (Trial) 5 min ago.</p>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <p><span class="font-medium text-gray-800">Payment Processed:</span> $299 subscription paid.</p>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                        <p><span class="font-medium text-gray-800">Error:</span> API latency spike detected. 1 hour ago.</p>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                        <p><span class="font-medium text-gray-800">Feature Deployed:</span> Dashboard v2 is live.</p>
+                    </li>
+                </ul>
+                <button id="view-details-btn" class="mt-6 w-full p-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                    View Full Log
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Full Log -->
+    <div id="full-log-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center p-4" aria-modal="true" role="dialog">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-all scale-95 opacity-0 duration-300">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-2xl font-bold text-gray-800">Full System Log</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <p class="text-gray-600 mb-4">This simulates a complex system log view where users can filter and analyze detailed events.</p>
+            <div class="h-64 overflow-y-auto border p-3 rounded-lg bg-gray-50 text-sm">
+                <p>[2024-10-17 14:00:01] INFO: Database connection health check OK.</p>
+                <p>[2024-10-17 13:58:30] WARNING: High memory usage detected on worker 3.</p>
+                <p>[2024-10-17 13:55:12] DEBUG: User 102 queried 'Monthly Performance'.</p>
+                <!-- ... many more log lines would be here ... -->
+                <p>[2024-10-17 13:00:00] CRITICAL: File system permissions modified on server alpha.</p>
+                <p>[2024-10-17 12:45:00] INFO: User 105 logged out successfully.</p>
+                <p>[2024-10-17 12:45:00] INFO: User 105 logged out successfully.</p>
+            </div>
+            <div class="mt-4 text-right">
+                <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">Export Log</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menu-toggle');
+            const mainContent = document.getElementById('main-content');
+            const modal = document.getElementById('full-log-modal');
+            const viewDetailsBtn = document.getElementById('view-details-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalInner = modal.querySelector('div');
+
+            // --- Sidebar Toggle Logic (for mobile/small screens) ---
+            const toggleSidebar = () => {
+                const isHidden = sidebar.classList.contains('-translate-x-full');
+
+                // Toggle visibility class
+                sidebar.classList.toggle('-translate-x-full');
+                sidebar.classList.toggle('shadow-2xl');
+
+                // Adjust main content for tablet/desktop views (though sticky sidebar handles most of this)
+                if (window.innerWidth < 768) { // md breakpoint
+                     // Add overlay when sidebar is open on mobile
+                    if (isHidden) {
+                        mainContent.classList.add('fixed', 'inset-0', 'bg-black/50');
+                    } else {
+                        mainContent.classList.remove('fixed', 'inset-0', 'bg-black/50');
+                    }
+                }
+            };
+
+            // Close sidebar when clicking main content overlay on mobile
+            mainContent.addEventListener('click', (e) => {
+                if (mainContent.classList.contains('fixed') && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    toggleSidebar();
+                }
+            });
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', toggleSidebar);
+            }
+
+            // --- Modal Logic ---
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                // Use a short delay to trigger the transition
+                setTimeout(() => {
+                    modalInner.classList.remove('opacity-0', 'scale-95');
+                    modalInner.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            };
+
+            const closeModal = () => {
+                modalInner.classList.remove('opacity-100', 'scale-100');
+                modalInner.classList.add('opacity-0', 'scale-95');
+                // Use a short delay to wait for the transition to complete
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
+
+            if (viewDetailsBtn && closeModalBtn) {
+                viewDetailsBtn.addEventListener('click', openModal);
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+
+            // Close modal when clicking outside (on the overlay)
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
