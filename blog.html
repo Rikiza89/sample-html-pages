@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ミニマリストブログ - 日々の考察</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Noto Sans JP for clear, beautiful Japanese typography */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f7f7f7; /* Off-White background */
+            color: #333333;
+        }
+        .header-title {
+            letter-spacing: 0.1em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        .card-link {
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .card-link:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center border-b border-gray-100">
+            <a href="#" class="header-title text-3xl font-light text-gray-800">
+                生活のヒント
+            </a>
+            <nav class="hidden md:flex space-x-6 text-gray-600 font-medium">
+                <a href="#articles" class="hover:text-red-500 transition duration-200">記事一覧</a>
+                <a href="#category" class="hover:text-red-500 transition duration-200">カテゴリ</a>
+                <a href="#about" class="hover:text-red-500 transition duration-200">このブログについて</a>
+            </nav>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-jp-button" class="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu-jp" class="hidden md:hidden bg-white/95 border-b border-gray-100">
+            <a href="#articles" class="block px-6 py-3 text-sm text-gray-600 hover:bg-gray-50">記事一覧</a>
+            <a href="#category" class="block px-6 py-3 text-sm text-gray-600 hover:bg-gray-50">カテゴリ</a>
+            <a href="#about" class="block px-6 py-3 text-sm text-gray-600 hover:bg-gray-50">このブログについて</a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-20">
+
+        <!-- Hero / Featured Article -->
+        <section class="mb-16">
+            <div class="bg-white p-8 sm:p-12 rounded-xl shadow-lg border-t-4 border-red-500">
+                <p class="text-sm text-red-500 font-semibold mb-3 tracking-wider uppercase">特集記事</p>
+                <h1 class="text-4xl sm:text-5xl font-extrabold leading-snug mb-4">
+                    デジタル時代の「持たない暮らし」を追求する
+                </h1>
+                <p class="text-lg text-gray-600 mb-6 max-w-3xl">
+                    情報過多の現代において、真に必要なものだけを選び取るミニマリズムの思想。デジタルデトックスと空間整理がもたらす心のゆとりとは。
+                </p>
+                <a href="#" class="inline-block text-red-500 font-bold hover:text-red-600 transition duration-200">
+                    続きを読む →
+                </a>
+            </div>
+        </section>
+
+        <!-- Article Grid Section -->
+        <section id="articles">
+            <h2 class="text-3xl font-bold mb-8 pb-2 border-b-2 border-gray-300">最新の記事</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- Article Card 1 -->
+                <a href="#" class="card-link block bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-200 hover:border-red-400">
+                    <p class="text-xs text-gray-500 mb-2">2024年10月1日 / ライフスタイル</p>
+                    <h3 class="text-xl font-bold mb-2 leading-relaxed">
+                        朝の習慣を変えるだけで生産性が3倍になる方法
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                        たった15分の早起きが、一日の質を大きく向上させる。具体的なステップを紹介します。
+                    </p>
+                </a>
+
+                <!-- Article Card 2 -->
+                <a href="#" class="card-link block bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-200 hover:border-red-400">
+                    <p class="text-xs text-gray-500 mb-2">2024年9月25日 / テクノロジー</p>
+                    <h3 class="text-xl font-bold mb-2 leading-relaxed">
+                        最高の読書体験を実現する電子ペーパーの選び方
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                        紙の質感を求めつつ、デジタルな利便性を手に入れるための、最適なデバイスレビュー。
+                    </p>
+                </a>
+
+                <!-- Article Card 3 -->
+                <a href="#" class="card-link block bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-200 hover:border-red-400">
+                    <p class="text-xs text-gray-500 mb-2">2024年9月18日 / 食事と健康</p>
+                    <h3 class="text-xl font-bold mb-2 leading-relaxed">
+                        週に一度の「ベジタリアンデー」が地球と体に優しい理由
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                        無理なく始められる菜食生活のメリットと、簡単なレシピを紹介します。
+                    </p>
+                </a>
+
+                <!-- Article Card 4 (Hidden on Mobile) -->
+                <a href="#" class="card-link hidden lg:block bg-white rounded-lg shadow-md p-6 border-l-4 border-gray-200 hover:border-red-400">
+                    <p class="text-xs text-gray-500 mb-2">2024年9月10日 / 働き方</p>
+                    <h3 class="text-xl font-bold mb-2 leading-relaxed">
+                        リモートワークを成功させるための集中力持続テクニック
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                        自宅での作業効率を高めるための、ポモドーロテクニックと環境設定のコツ。
+                    </p>
+                </a>
+
+            </div>
+            <div class="mt-12 text-center">
+                <button class="bg-red-500 text-white font-medium py-3 px-8 rounded-full shadow-lg hover:bg-red-600 transition duration-300 transform hover:scale-105">
+                    すべての記事を見る
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white py-12 border-t mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center text-gray-500 text-sm space-y-2">
+            <p>生活のヒント | 日々の考察と発見</p>
+            <p>ご意見・お問い合わせは <a href="mailto:info@example.com" class="text-red-500 hover:underline">こちら</a> まで。</p>
+            <p>&copy; 2024 Seikatsu no Hinto.</p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle (Japanese file)
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('mobile-menu-jp-button');
+            const menu = document.getElementById('mobile-menu-jp');
+
+            // Function to toggle menu visibility
+            const toggleMenu = () => {
+                menu.classList.toggle('hidden');
+            };
+
+            // Event listener for the button
+            if (button) {
+                button.addEventListener('click', toggleMenu);
+            }
+
+            // Optional: Close menu when a link is clicked
+            if (menu) {
+                menu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (!menu.classList.contains('hidden')) {
+                            menu.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
