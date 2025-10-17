@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Financial Analysis Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load d3.js for Data Visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; }
+        .dashboard-card { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); }
+        .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08); }
+        
+        /* D3 Chart Styling */
+        .line { fill: none; stroke: #3b82f6; stroke-width: 3px; }
+        .axis path, .axis line { stroke: #e5e7eb; }
+        .axis text { fill: #6b7280; font-size: 11px; }
+        .tooltip {
+            position: absolute; text-align: center; padding: 8px; font: 12px sans-serif;
+            background: #fff; border: 1px solid #ccc; border-radius: 6px; pointer-events: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); opacity: 0; transition: opacity 0.2s;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header and Language Selector -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b pb-4">
+            <div>
+                <h1 id="i18n-title" class="text-4xl font-extrabold text-gray-900" data-i18n="title">Financial Analysis Dashboard</h1>
+                <p id="i18n-symbol" class="text-xl font-medium text-blue-600 mt-1">GGL - Tech Innovations Inc.</p>
+            </div>
+            <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+                <label for="language-select" class="text-sm font-medium text-gray-700" data-i18n="lang_label">Language:</label>
+                <select id="language-select" class="p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    <option value="en">English</option>
+                    <option value="ja">日本語 (Japanese)</option>
+                    <option value="it">Italiano (Italian)</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Control Panel: Filters and Actions -->
+        <section class="bg-white dashboard-card rounded-xl p-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            
+            <!-- Timeframe Filter -->
+            <div class="flex space-x-3 text-sm font-medium">
+                <button class="time-filter-btn p-2 rounded-lg bg-blue-500 text-white" data-period="7d">7D</button>
+                <button class="time-filter-btn p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" data-period="30d">30D</button>
+                <button class="time-filter-btn p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" data-period="90d">90D</button>
+                <button class="time-filter-btn p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" data-period="1y">1Y</button>
+                <button class="time-filter-btn p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200" data-period="max" data-i18n="btn_max">Max</button>
+            </div>
+
+            <!-- Data Type Filter -->
+            <div>
+                <label for="data-type-select" class="text-sm font-medium text-gray-700 mr-2" data-i18n="label_data_type">Data Type:</label>
+                <select id="data-type-select" class="p-2 border rounded-lg text-gray-700 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="closing_price" data-i18n="data_price">Closing Price</option>
+                    <option value="volume" data-i18n="data_volume">Trading Volume</option>
+                </select>
+            </div>
+
+        </section>
+
+        <!-- Key Statistics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Card 1: Current Price -->
+            <div class="stat-card bg-white p-5 rounded-xl border-l-4 border-blue-500">
+                <p class="text-sm font-medium text-gray-500" data-i18n="stat_current">Current Price</p>
+                <p id="stat-price" class="text-3xl font-bold text-gray-900 mt-1">$175.45</p>
+                <p id="stat-change" class="text-xs mt-2 text-green-500 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    +1.2% Today
+                </p>
+            </div>
+            <!-- Card 2: 52 Week High -->
+            <div class="stat-card bg-white p-5 rounded-xl border-l-4 border-yellow-500">
+                <p class="text-sm font-medium text-gray-500" data-i18n="stat_high">52 Week High</p>
+                <p id="stat-high" class="text-3xl font-bold text-gray-900 mt-1">$180.12</p>
+                <p class="text-xs mt-2 text-yellow-500" data-i18n="stat_date_reached">Reached: 2 Weeks Ago</p>
+            </div>
+            <!-- Card 3: Average Volume -->
+            <div class="stat-card bg-white p-5 rounded-xl border-l-4 border-gray-500">
+                <p class="text-sm font-medium text-gray-500" data-i18n="stat_avg_volume">Avg. Volume (30D)</p>
+                <p id="stat-volume" class="text-3xl font-bold text-gray-900 mt-1">1.45M</p>
+                <p class="text-xs mt-2 text-gray-500" data-i18n="stat_normal">Normal Trading Activity</p>
+            </div>
+            <!-- Card 4: Market Cap -->
+            <div class="stat-card bg-white p-5 rounded-xl border-l-4 border-purple-500">
+                <p class="text-sm font-medium text-gray-500" data-i18n="stat_market_cap">Market Cap</p>
+                <p id="stat-market-cap" class="text-3xl font-bold text-gray-900 mt-1">$1.2T</p>
+                <p class="text-xs mt-2 text-purple-500" data-i18n="stat_sector">Sector: Technology</p>
+            </div>
+        </div>
+
+        <!-- Main Chart Area -->
+        <section class="bg-white dashboard-card rounded-xl p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4" data-i18n="chart_title">Price Movement (Last 7 Days)</h2>
+            <div id="chart-container" class="w-full">
+                <!-- SVG chart generated by D3 will be inserted here -->
+            </div>
+        </section>
+
+    </div>
+    
+    <!-- D3 Tooltip Element -->
+    <div class="tooltip" id="chart-tooltip"></div>
+
+    <script>
+        // --- D3 Data Simulation ---
+        const generateMockData = (period, dataType) => {
+            const numPoints = period === '7d' ? 7 : (period === '30d' ? 30 : 60);
+            const today = new Date();
+            const data = [];
+            let lastValue = 175.00;
+            let lastVolume = 1400000;
+
+            for (let i = 0; i < numPoints; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - (numPoints - 1 - i));
+                
+                // Simulate price movement
+                const priceChange = (Math.random() - 0.5) * 5; // Change between -2.5 and +2.5
+                lastValue = Math.max(150, lastValue + priceChange); // Keep price above 150
+                
+                // Simulate volume change
+                const volumeChange = (Math.random() - 0.5) * 200000;
+                lastVolume = Math.max(1000000, lastVolume + volumeChange); // Keep volume above 1M
+
+                data.push({
+                    date: date,
+                    closing_price: parseFloat(lastValue.toFixed(2)),
+                    volume: parseInt(lastVolume)
+                });
+            }
+            return data;
+        };
+        
+        // --- D3 Visualization Function ---
+        const drawChart = (data, dataType) => {
+            const container = d3.select("#chart-container");
+            container.select("svg").remove(); // Clear previous chart
+            
+            const margin = { top: 20, right: 30, bottom: 40, left: 60 };
+            const containerWidth = document.getElementById('chart-container').clientWidth;
+            const width = containerWidth - margin.left - margin.right;
+            const height = 400 - margin.top - margin.bottom;
+
+            const svg = container.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Scales
+            const x = d3.scaleTime()
+                .domain(d3.extent(data, d => d.date))
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([d3.min(data, d => d[dataType]) * 0.98, d3.max(data, d => d[dataType]) * 1.02])
+                .range([height, 0]);
+
+            // Axes
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).ticks(data.length > 30 ? 6 : d3.timeDay.every(1)).tickFormat(d3.timeFormat(data.length > 30 ? "%b %d" : "%a, %d")));
+
+            svg.append("g")
+                .call(d3.axisLeft(y).tickFormat(d => dataType === 'volume' ? d3.format(".2s")(d) : d3.format("$.2f")(d)));
+            
+            // Gridlines
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickSize(-height).tickFormat(""));
+
+            svg.append("g")
+                .attr("class", "grid")
+                .call(d3.axisLeft(y).tickSize(-width).tickFormat(""));
+
+            // Line Generator
+            const line = d3.line()
+                .x(d => x(d.date))
+                .y(d => y(d[dataType]));
+
+            // Draw Line
+            svg.append("path")
+                .datum(data)
+                .attr("class", "line")
+                .attr("d", line);
+            
+            // Tooltip setup
+            const tooltip = d3.select("#chart-tooltip");
+            const bisect = d3.bisector(d => d.date).right;
+
+            const formatValue = d => dataType === 'volume' ? d3.format(",.2s")(d) : d3.format("$,.2f")(d);
+            const formatTitle = d => dataType === 'volume' ? dictionary[currentLang]['data_volume'] : dictionary[currentLang]['data_price'];
+
+            // Focus circle and interaction layer
+            const focus = svg.append("circle")
+                .attr("r", 5)
+                .attr("fill", "#2563eb")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 2)
+                .style("opacity", 0);
+
+            svg.append("rect")
+                .attr("class", "overlay")
+                .attr("width", width)
+                .attr("height", height)
+                .style("fill", "none")
+                .style("pointer-events", "all")
+                .on("mouseover", () => { focus.style("opacity", 1); tooltip.style("opacity", 1); })
+                .on("mouseout", () => { focus.style("opacity", 0); tooltip.style("opacity", 0); })
+                .on("mousemove", mousemove);
+
+            function mousemove(event) {
+                const [x0] = d3.pointer(event);
+                const date = x.invert(x0);
+                const i = bisect(data, date, 1);
+                const d0 = data[i - 1];
+                const d1 = data[i];
+                const d = d1 && (d0 && d1.date - date > date - d0.date) ? d0 : d1 || d0;
+                
+                if (!d) return;
+
+                focus.attr("transform", `translate(${x(d.date)},${y(d[dataType])})`);
+
+                const tooltipHtml = `
+                    <p class="font-bold">${d3.timeFormat("%b %d, %Y")(d.date)}</p>
+                    <p class="mt-1">${formatTitle(d)}: <span class="text-blue-600 font-semibold">${formatValue(d[dataType])}</span></p>
+                `;
+
+                tooltip.html(tooltipHtml)
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            }
+        };
+
+        // --- Translation Dictionary ---
+        const dictionary = {
+            'en': {
+                title: "Financial Analysis Dashboard", lang_label: "Language:",
+                btn_max: "Max", label_data_type: "Data Type:", data_price: "Closing Price", data_volume: "Trading Volume",
+                stat_current: "Current Price", stat_high: "52 Week High", stat_avg_volume: "Avg. Volume (30D)", stat_market_cap: "Market Cap",
+                stat_date_reached: "Reached: 2 Weeks Ago", stat_normal: "Normal Trading Activity", stat_sector: "Sector: Technology",
+                chart_title: "Price Movement (Last 7 Days)",
+            },
+            'ja': {
+                title: "財務分析ダッシュボード", lang_label: "言語:",
+                btn_max: "最大", label_data_type: "データ種別:", data_price: "終値", data_volume: "取引高",
+                stat_current: "現在の価格", stat_high: "52週高値", stat_avg_volume: "平均出来高 (30日)", stat_market_cap: "時価総額",
+                stat_date_reached: "達成日: 2週間前", stat_normal: "通常の取引活動", stat_sector: "セクター: テクノロジー",
+                chart_title: "価格変動 (過去7日間)",
+            },
+            'it': {
+                title: "Cruscotto di Analisi Finanziaria", lang_label: "Lingua:",
+                btn_max: "Max", label_data_type: "Tipo di Dati:", data_price: "Prezzo di Chiusura", data_volume: "Volume di Scambi",
+                stat_current: "Prezzo Attuale", stat_high: "Massimo 52 Settimane", stat_avg_volume: "Vol. Medio (30G)", stat_market_cap: "Capitalizzazione",
+                stat_date_reached: "Raggiunto: 2 Settimane Fa", stat_normal: "Attività di Scambio Normale", stat_sector: "Settore: Tecnologia",
+                chart_title: "Movimento dei Prezzi (Ultimi 7 Giorni)",
+            }
+        };
+
+        let currentLang = 'en';
+        let currentPeriod = '7d';
+        let currentDataType = 'closing_price';
+
+        // --- Translation Function ---
+        const updateLanguage = (lang) => {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary[lang] && dictionary[lang][key]) {
+                    el.textContent = dictionary[lang][key];
+                }
+            });
+            document.documentElement.lang = lang;
+            // Redraw chart title to reflect language change
+            updateChart();
+        };
+
+        // --- Chart Update Function ---
+        const updateChart = () => {
+            const chartTitleEl = document.querySelector('#chart_title');
+            
+            // Generate data based on current filters
+            const data = generateMockData(currentPeriod, currentDataType);
+            drawChart(data, currentDataType);
+
+            // Update chart title based on period and language
+            const titleKey = currentPeriod === '7d' ? '7 Days' : (currentPeriod === '30d' ? '30 Days' : (currentPeriod === '90d' ? '90 Days' : (currentPeriod === '1y' ? '1 Year' : 'Max')));
+            const typeKey = currentDataType === 'closing_price' ? dictionary[currentLang]['data_price'] : dictionary[currentLang]['data_volume'];
+            
+            const chartTitle = `${typeKey} (${titleKey})`;
+            document.querySelector('.bg-white.dashboard-card h2').textContent = chartTitle;
+        };
+
+        // --- Main Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const langSelect = document.getElementById('language-select');
+            const timeFilterBtns = document.querySelectorAll('.time-filter-btn');
+            const dataTypeSelect = document.getElementById('data-type-select');
+
+            // 1. Setup Language Listener
+            langSelect.addEventListener('change', (e) => updateLanguage(e.target.value));
+
+            // 2. Setup Time Filter Listeners
+            timeFilterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Update active button styling
+                    timeFilterBtns.forEach(b => {
+                        b.classList.remove('bg-blue-500', 'text-white');
+                        b.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                    });
+                    e.target.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                    e.target.classList.add('bg-blue-500', 'text-white');
+
+                    // Update state and chart
+                    currentPeriod = e.target.dataset.period;
+                    updateChart();
+                });
+            });
+
+            // 3. Setup Data Type Listener
+            dataTypeSelect.addEventListener('change', (e) => {
+                currentDataType = e.target.value;
+                updateChart();
+            });
+
+            // 4. Initial Load
+            updateLanguage('en');
+            updateChart();
+
+            // 5. Handle responsiveness (redrawing chart on resize)
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    updateChart();
+                }, 250);
+            });
+        });
+    </script>
+</body>
+</html>
