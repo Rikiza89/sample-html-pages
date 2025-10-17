@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Vetrina Artigianale - L'Eredità</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Using a sophisticated font combination */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcfc;
+            color: #333;
+        }
+        .title-font {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 0.05em;
+        }
+        .hero-section {
+            background-color: #6d2e19; /* Deep Terracotta */
+            background-image: linear-gradient(135deg, #7c3f2d 0%, #6d2e19 100%);
+            min-height: 85vh;
+            color: #fef3c7; /* Light Tan */
+        }
+        .btn-primary {
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-primary:hover {
+            background-color: #fef3c7;
+            color: #6d2e19;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .product-card {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <a href="#" class="title-font text-3xl font-extrabold text-[#6d2e19] hover:text-[#7c3f2d] transition duration-300">
+                L'Eredità
+            </a>
+            <nav class="hidden md:flex space-x-8 text-lg font-medium">
+                <a href="#prodotti" class="hover:text-[#6d2e19] transition duration-300">Prodotti</a>
+                <a href="#storia" class="hover:text-[#6d2e19] transition duration-300">La Nostra Storia</a>
+                <a href="#contatti" class="hover:text-[#6d2e19] transition duration-300">Contatti</a>
+            </nav>
+            <!-- Mobile Menu Button - (Not implemented for brevity, but same JS logic as above files would apply) -->
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section flex items-center justify-center text-center p-10">
+        <div class="max-w-4xl py-24">
+            <p class="text-xl sm:text-2xl title-font italic mb-4 opacity-80">Fatto a Mano, Fatto in Italia</p>
+            <h1 class="text-5xl sm:text-7xl lg:text-8xl title-font font-bold leading-tight mb-6">
+                L'Arte di Vivere con Eleganza
+            </h1>
+            <p class="text-lg sm:text-xl font-light mb-10 max-w-2xl mx-auto opacity-90">
+                Scopri la collezione che unisce la tradizione secolare dell'artigianato italiano con il design contemporaneo.
+            </p>
+            <a href="#prodotti" class="btn-primary inline-block bg-[#fef3c7] text-[#6d2e19] font-bold title-font py-3 px-10 rounded-full text-xl uppercase">
+                Scopri Ora
+            </a>
+        </div>
+    </section>
+
+    <!-- Product Grid Section -->
+    <section id="prodotti" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="title-font text-4xl font-extrabold text-center mb-16 text-[#6d2e19]">
+                I Nostri Capolavori
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+
+                <!-- Product 1 -->
+                <a href="#" class="product-card block bg-gray-50 rounded-xl shadow-lg border border-gray-100">
+                    <img src="https://placehold.co/600x400/8B4513/fff?text=Vaso+in+Ceramica" alt="Vaso in Ceramica" class="w-full h-72 object-cover rounded-t-xl" onerror="this.onerror=null;this.src='https://placehold.co/600x400/8B4513/fff?text=Vaso';" />
+                    <div class="p-6 text-center">
+                        <h3 class="title-font text-2xl font-semibold mb-1 text-gray-800">Vaso Smeraldo</h3>
+                        <p class="text-gray-500 text-sm italic">Collezione 2024</p>
+                        <p class="text-xl font-bold mt-3 text-[#6d2e19]">€ 149</p>
+                    </div>
+                </a>
+
+                <!-- Product 2 -->
+                <a href="#" class="product-card block bg-gray-50 rounded-xl shadow-lg border border-gray-100">
+                    <img src="https://placehold.co/600x400/4F4F4F/fff?text=Borsa+in+Pelle" alt="Borsa in Pelle" class="w-full h-72 object-cover rounded-t-xl" onerror="this.onerror=null;this.src='https://placehold.co/600x400/4F4F4F/fff?text=Borsa';" />
+                    <div class="p-6 text-center">
+                        <h3 class="title-font text-2xl font-semibold mb-1 text-gray-800">Borsa Classica</h3>
+                        <p class="text-gray-500 text-sm italic">Pelle Naturale</p>
+                        <p class="text-xl font-bold mt-3 text-[#6d2e19]">€ 299</p>
+                    </div>
+                </a>
+
+                <!-- Product 3 -->
+                <a href="#" class="product-card block bg-gray-50 rounded-xl shadow-lg border border-gray-100">
+                    <img src="https://placehold.co/600x400/A9A9A9/fff?text=Set+di+Posate" alt="Set di Posate" class="w-full h-72 object-cover rounded-t-xl" onerror="this.onerror=null;this.src='https://placehold.co/600x400/A9A9A9/fff?text=Posate';" />
+                    <div class="p-6 text-center">
+                        <h3 class="title-font text-2xl font-semibold mb-1 text-gray-800">Set di Posate Oro</h3>
+                        <p class="text-gray-500 text-sm italic">Finitura Opaca</p>
+                        <p class="text-xl font-bold mt-3 text-[#6d2e19]">€ 79</p>
+                    </div>
+                </a>
+
+            </div>
+            <div class="mt-16 text-center">
+                <button class="bg-[#6d2e19] text-[#fef3c7] font-semibold py-3 px-10 rounded-full text-lg hover:bg-[#7c3f2d] transition duration-300">
+                    Sfoglia Tutte le Categorie
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section id="contatti" class="py-20 bg-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="title-font text-4xl font-extrabold mb-4 text-[#6d2e19]">
+                Hai Domande?
+            </h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Contattaci per informazioni sui nostri prodotti o per ordini personalizzati. La nostra bottega è sempre aperta per te.
+            </p>
+            <a href="mailto:info@leredita.it" class="btn-primary inline-block bg-[#6d2e19] text-[#fef3c7] font-bold py-3 px-12 rounded-full text-xl">
+                Scrivici
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#333] py-8 text-center text-gray-400 text-sm">
+        <p>&copy; 2024 L'Eredità. Tutti i diritti riservati. | Design con <span class="title-font italic">Eleganza</span>.</p>
+    </footer>
+</body>
+</html>
