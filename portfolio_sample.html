@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Developer Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* GitHub Dark Background */
+        }
+        .section-header::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: #38bdf8; /* Sky Blue accent */
+            margin-top: 8px;
+            border-radius: 9999px;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.15);
+        }
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <!-- Navigation -->
+    <header class="sticky top-0 z-50 bg-black/70 backdrop-blur-sm shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-sky-400 hover:text-sky-300 transition duration-300">G. A. Model</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#about" class="hover:text-sky-400 transition duration-300">About</a>
+                <a href="#projects" class="hover:text-sky-400 transition duration-300">Projects</a>
+                <a href="#skills" class="hover:text-sky-400 transition duration-300">Skills</a>
+                <a href="#contact" class="px-4 py-1.5 border border-sky-400 rounded-full hover:bg-sky-400 hover:text-gray-900 transition duration-300">Contact</a>
+            </nav>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-sky-400 transition duration-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/90 pb-4">
+            <a href="#about" class="block px-8 py-2 text-sm hover:bg-gray-800">About</a>
+            <a href="#projects" class="block px-8 py-2 text-sm hover:bg-gray-800">Projects</a>
+            <a href="#skills" class="block px-8 py-2 text-sm hover:bg-gray-800">Skills</a>
+            <a href="#contact" class="block px-8 py-2 text-sm hover:bg-gray-800">Contact</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto">
+
+        <!-- Hero Section -->
+        <section id="hero" class="pt-24 pb-32 text-center lg:text-left lg:flex items-center justify-between px-4 sm:px-6 lg:px-8 min-h-screen">
+            <div class="lg:w-3/5">
+                <p class="text-lg text-sky-400 mb-3 font-medium tracking-wider uppercase">Hello, I'm</p>
+                <h1 class="text-5xl sm:text-7xl lg:text-8xl font-extrabold leading-tight mb-6">
+                    [Your Name]
+                </h1>
+                <h2 class="text-2xl sm:text-3xl text-gray-400 mb-8">
+                    A Full-Stack Developer creating modern web solutions.
+                </h2>
+                <a href="#projects" class="inline-block bg-sky-500 text-gray-900 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-sky-400 transition duration-300 transform hover:scale-105">View My Work</a>
+            </div>
+            <div class="hidden lg:block lg:w-2/5 mt-10 lg:mt-0">
+                <!-- Placeholder for an image or dynamic code snippet -->
+                <div class="h-64 w-64 mx-auto rounded-full bg-gray-800 flex items-center justify-center text-4xl text-gray-500 border-4 border-sky-500">
+                    &lt;/&gt;
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-20 px-4 sm:px-6 lg:px-8">
+            <h3 class="section-header text-4xl font-bold mb-12">About Me</h3>
+            <div class="text-lg space-y-6 max-w-4xl text-gray-300">
+                <p>I specialize in building performant, scalable, and beautifully designed web applications. My passion lies in bridging the gap between elegant UI/UX and robust back-end systems.</p>
+                <p>Over the last few years, I've focused on JavaScript ecosystems, including React and modern Node.js frameworks. I'm always eager to learn new technologies and contribute to open-source projects.</p>
+                <p>Let's build something amazing together.</p>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 px-4 sm:px-6 lg:px-8 bg-[#161b22]">
+            <h3 class="section-header text-4xl font-bold mb-12">Featured Projects</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+                <!-- Project 1 -->
+                <div class="card bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-700">
+                    <h4 class="text-2xl font-semibold text-sky-400 mb-3">Project Navigator</h4>
+                    <p class="text-gray-400 mb-4">A collaborative task management system built with Next.js and integrated with a real-time database.</p>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">React</span>
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">Node.js</span>
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">MongoDB</span>
+                    </div>
+                    <a href="#" class="mt-4 inline-block text-sky-400 hover:text-sky-300 font-medium">View Live →</a>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="card bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-700">
+                    <h4 class="text-2xl font-semibold text-sky-400 mb-3">Data Visualization Dashboard</h4>
+                    <p class="text-gray-400 mb-4">An interactive dashboard using D3.js to display complex financial metrics in real-time.</p>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">D3.js</span>
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">TypeScript</span>
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">Tailwind</span>
+                    </div>
+                    <a href="#" class="mt-4 inline-block text-sky-400 hover:text-sky-300 font-medium">View Live →</a>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="card bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-700">
+                    <h4 class="text-2xl font-semibold text-sky-400 mb-3">E-commerce API</h4>
+                    <p class="text-gray-400 mb-4">A robust, scalable REST API for a clothing retailer, focused on high-traffic performance.</p>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">Python</span>
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">Django</span>
+                        <span class="bg-sky-800/50 text-sky-300 px-3 py-1 rounded-full">PostgreSQL</span>
+                    </div>
+                    <a href="#" class="mt-4 inline-block text-sky-400 hover:text-sky-300 font-medium">View Live →</a>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 px-4 sm:px-6 lg:px-8">
+            <h3 class="section-header text-4xl font-bold mb-12">Tech Stack</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 text-center">
+                <!-- Skill Card -->
+                <div class="p-6 bg-gray-800 rounded-xl hover:bg-gray-700 transition duration-300 shadow-lg">
+                    <span class="text-4xl">💻</span>
+                    <p class="mt-2 text-lg font-medium">JavaScript/TypeScript</p>
+                </div>
+                <div class="p-6 bg-gray-800 rounded-xl hover:bg-gray-700 transition duration-300 shadow-lg">
+                    <span class="text-4xl">⚛️</span>
+                    <p class="mt-2 text-lg font-medium">React / Next.js</p>
+                </div>
+                <div class="p-6 bg-gray-800 rounded-xl hover:bg-gray-700 transition duration-300 shadow-lg">
+                    <span class="text-4xl">🔧</span>
+                    <p class="mt-2 text-lg font-medium">Node.js / Express</p>
+                </div>
+                <div class="p-6 bg-gray-800 rounded-xl hover:bg-gray-700 transition duration-300 shadow-lg">
+                    <span class="text-4xl">💾</span>
+                    <p class="mt-2 text-lg font-medium">Databases (SQL/NoSQL)</p>
+                </div>
+                <div class="p-6 bg-gray-800 rounded-xl hover:bg-gray-700 transition duration-300 shadow-lg">
+                    <span class="text-4xl">☁️</span>
+                    <p class="mt-2 text-lg font-medium">Cloud (AWS/GCP)</p>
+                </div>
+                <div class="p-6 bg-gray-800 rounded-xl hover:bg-gray-700 transition duration-300 shadow-lg">
+                    <span class="text-4xl">🎨</span>
+                    <p class="mt-2 text-lg font-medium">Tailwind CSS</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 text-center bg-[#161b22]">
+            <h3 class="section-header text-4xl font-bold inline-block mb-8">Get In Touch</h3>
+            <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                Have a project idea or just want to say hello? My inbox is always open.
+            </p>
+            <a href="mailto:youremail@example.com" class="inline-block bg-sky-500 text-gray-900 font-semibold py-3 px-10 rounded-full text-lg shadow-xl hover:bg-sky-400 transition duration-300 transform hover:scale-105">
+                Email Me
+            </a>
+            <div class="mt-8 space-x-4">
+                <a href="#" class="text-gray-400 hover:text-sky-400 transition duration-300 text-sm underline">LinkedIn</a>
+                <a href="https://github.com/yourusername" class="text-gray-400 hover:text-sky-400 transition duration-300 text-sm underline">GitHub</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black/90 py-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2024 Your Name. All rights reserved. | Built with HTML, Tailwind CSS, & JS.</p>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('mobile-menu');
+
+            // Function to toggle menu visibility
+            const toggleMenu = () => {
+                menu.classList.toggle('hidden');
+            };
+
+            // Event listener for the button
+            if (button) {
+                button.addEventListener('click', toggleMenu);
+            }
+
+            // Close menu when a link is clicked (for smooth scroll anchors)
+            if (menu) {
+                menu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (!menu.classList.contains('hidden')) {
+                            menu.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
