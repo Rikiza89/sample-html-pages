@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Global Flight Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .card { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+        /* Complex button gradient */
+        .btn-primary {
+            background-image: linear-gradient(to right, #1d4ed8, #2563eb, #3b82f6);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-image: linear-gradient(to right, #1e40af, #1d4ed8, #2563eb);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.4);
+        }
+        .tab-active {
+            border-color: #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main Widget Container -->
+    <div class="card bg-white w-full max-w-4xl rounded-2xl p-6 md:p-10">
+
+        <!-- Header and Language Selector -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b pb-4">
+            <div>
+                <h1 id="i18n-title" class="text-3xl font-extrabold text-gray-800" data-i18n="title">Global Flight Search</h1>
+                <p id="i18n-subtitle" class="text-gray-500 mt-1" data-i18n="subtitle">Find the best flights worldwide.</p>
+            </div>
+            <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+                <label for="language-select" class="text-sm font-medium text-gray-700" data-i18n="lang_label">Language:</label>
+                <select id="language-select" class="p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    <option value="en">English</option>
+                    <option value="ja">日本語 (Japanese)</option>
+                    <option value="it">Italiano (Italian)</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <nav class="flex space-x-6 mb-8">
+            <button class="tab-button border-b-2 border-transparent pb-1 text-gray-600 hover:text-blue-600 transition tab-active" data-tab="search" data-i18n="tab_search">Search</button>
+            <button class="tab-button border-b-2 border-transparent pb-1 text-gray-600 hover:text-blue-600 transition" data-tab="book" data-i18n="tab_book">Book</button>
+            <button class="tab-button border-b-2 border-transparent pb-1 text-gray-600 hover:text-blue-600 transition" data-tab="manage" data-i18n="tab_manage">Manage</button>
+        </nav>
+
+        <!-- Search Form (Tab Content) -->
+        <section id="search-tab" class="tab-content">
+            <form id="flight-search-form" class="space-y-6">
+
+                <!-- Origin and Destination -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="origin" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_from">From:</label>
+                        <select id="origin" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="" disabled selected data-i18n="select_city">Select City</option>
+                            <option value="LHR" data-i18n="city_london">London (LHR)</option>
+                            <option value="NRT" data-i18n="city_tokyo">Tokyo (NRT)</option>
+                            <option value="FCO" data-i18n="city_rome">Rome (FCO)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="destination" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_to">To:</label>
+                        <select id="destination" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="" disabled selected data-i18n="select_city">Select City</option>
+                            <option value="NRT" data-i18n="city_tokyo">Tokyo (NRT)</option>
+                            <option value="LHR" data-i18n="city_london">London (LHR)</option>
+                            <option value="FCO" data-i18n="city_rome">Rome (FCO)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dates and Passengers -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="depart-date" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_depart">Depart Date:</label>
+                        <input type="date" id="depart-date" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="return-date" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_return">Return Date:</label>
+                        <input type="date" id="return-date" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label for="passengers" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="label_passengers">Passengers:</label>
+                        <select id="passengers" required class="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition">
+                            <option value="1" data-i18n="passengers_1">1 Passenger</option>
+                            <option value="2" data-i18n="passengers_2">2 Passengers</option>
+                            <option value="3" data-i18n="passengers_3">3+ Passengers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Button and Feedback -->
+                <div class="pt-4">
+                    <button type="submit" id="search-button" class="btn-primary w-full text-white py-4 rounded-xl text-lg font-semibold uppercase tracking-wider">
+                        <span data-i18n="btn_search">Search Flights</span>
+                    </button>
+                    <div id="message-area" class="mt-4 text-center p-3 rounded-xl hidden transition duration-300"></div>
+                </div>
+            </form>
+        </section>
+
+        <!-- Mock Results Section (Hidden initially) -->
+        <section id="results-section" class="hidden mt-8 p-6 border-t border-gray-200">
+            <h2 class="text-xl font-bold text-gray-800 mb-4" data-i18n="msg_result_title">Top Result:</h2>
+            <div id="flight-card" class="bg-blue-50 p-6 rounded-xl border border-blue-200 flex flex-col md:flex-row justify-between items-center transition duration-500">
+                <div class="space-y-1">
+                    <p class="text-2xl font-bold text-blue-800" id="flight-route">LHR → NRT</p>
+                    <p class="text-sm text-gray-600" id="flight-dates">Oct 20 - Oct 27</p>
+                    <p class="text-sm text-blue-600" data-i18n="msg_result_details">Direct flight, 12h 30m duration.</p>
+                </div>
+                <div class="mt-4 md:mt-0 text-right">
+                    <p class="text-lg text-gray-500" data-i18n="msg_price">Price:</p>
+                    <p class="text-4xl font-extrabold text-green-600">$1,250</p>
+                    <button class="mt-2 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+                        Book Now
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const dictionary = {
+            'en': {
+                title: "Global Flight Search", subtitle: "Find the best flights worldwide.", lang_label: "Language:",
+                tab_search: "Search", tab_book: "Book", tab_manage: "Manage",
+                label_from: "From:", label_to: "To:", label_depart: "Depart Date:", label_return: "Return Date:", label_passengers: "Passengers:",
+                btn_search: "Search Flights", select_city: "Select City",
+                msg_loading: "Searching for flights...", msg_result_title: "Top Result:", msg_result_details: "Direct flight, 12h 30m duration.", msg_price: "Price:",
+                msg_error_fields: "Please fill in all search fields.",
+                city_london: "London (LHR)", city_tokyo: "Tokyo (NRT)", city_rome: "Rome (FCO)",
+                passengers_1: "1 Passenger", passengers_2: "2 Passengers", passengers_3: "3+ Passengers",
+            },
+            'ja': {
+                title: "グローバル航空券検索", subtitle: "世界中の最高のフライトを見つけましょう。", lang_label: "言語:",
+                tab_search: "検索", tab_book: "予約", tab_manage: "管理",
+                label_from: "出発地:", label_to: "目的地:", label_depart: "出発日:", label_return: "帰着日:", label_passengers: "乗客:",
+                btn_search: "フライトを検索", select_city: "都市を選択",
+                msg_loading: "フライトを検索中です...", msg_result_title: "ベストな結果:", msg_result_details: "直行便、所要時間12時間30分。", msg_price: "価格:",
+                msg_error_fields: "すべての検索フィールドを入力してください。",
+                city_london: "ロンドン (LHR)", city_tokyo: "東京 (NRT)", city_rome: "ローマ (FCO)",
+                passengers_1: "1名", passengers_2: "2名", passengers_3: "3名以上",
+            },
+            'it': {
+                title: "Ricerca Voli Globale", subtitle: "Trova i migliori voli in tutto il mondo.", lang_label: "Lingua:",
+                tab_search: "Cerca", tab_book: "Prenota", tab_manage: "Gestisci",
+                label_from: "Da:", label_to: "A:", label_depart: "Data Partenza:", label_return: "Data Ritorno:", label_passengers: "Passeggeri:",
+                btn_search: "Cerca Voli", select_city: "Seleziona Città",
+                msg_loading: "Ricerca voli in corso...", msg_result_title: "Miglior Risultato:", msg_result_details: "Volo diretto, durata 12 ore e 30 minuti.", msg_price: "Prezzo:",
+                msg_error_fields: "Si prega di compilare tutti i campi di ricerca.",
+                city_london: "Londra (LHR)", city_tokyo: "Tokyo (NRT)", city_rome: "Roma (FCO)",
+                passengers_1: "1 Passeggero", passengers_2: "2 Passeggeri", passengers_3: "3+ Passeggeri",
+            }
+        };
+
+        let currentLang = 'en';
+
+        // --- Core Translation Function ---
+        const updateLanguage = (lang) => {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary[lang] && dictionary[lang][key]) {
+                    // Handle special case for <option> elements
+                    if (el.tagName === 'OPTION' && key.startsWith('city_')) {
+                        // Keep the original value (airport code) but update the display text
+                        const fullText = dictionary[lang][key];
+                        el.textContent = fullText;
+                    } else if (el.tagName === 'OPTION' && key.startsWith('passengers_')) {
+                        el.textContent = dictionary[lang][key];
+                    } else if (el.tagName === 'OPTION' && key === 'select_city') {
+                        el.textContent = dictionary[lang][key];
+                    }
+                    else {
+                        el.textContent = dictionary[lang][key];
+                    }
+                }
+            });
+            document.documentElement.lang = lang; // Update HTML lang attribute
+        };
+
+        // --- Main Logic on Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const langSelect = document.getElementById('language-select');
+            const searchForm = document.getElementById('flight-search-form');
+            const messageArea = document.getElementById('message-area');
+            const resultsSection = document.getElementById('results-section');
+            const flightRouteEl = document.getElementById('flight-route');
+            const flightDatesEl = document.getElementById('flight-dates');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            // 1. Initial setup (English)
+            updateLanguage('en');
+
+            // 2. Language Change Listener
+            langSelect.addEventListener('change', (e) => {
+                updateLanguage(e.target.value);
+            });
+
+            // 3. Tab Switching Logic (UX Complexity)
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+                    button.classList.add('tab-active');
+                    
+                    // Hide all content sections and only show the relevant one
+                    document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+                    const targetTab = button.getAttribute('data-tab');
+                    if (targetTab === 'search') {
+                        document.getElementById('search-tab').style.display = 'block';
+                    }
+                    // For demo, other tabs do nothing
+                });
+            });
+
+            // 4. Form Submission and Simulated Search (UX Flow)
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                // Simple Validation Check
+                const origin = document.getElementById('origin').value;
+                const destination = document.getElementById('destination').value;
+                const departDate = document.getElementById('depart-date').value;
+                const returnDate = document.getElementById('return-date').value;
+
+                if (!origin || !destination || !departDate || !returnDate) {
+                    messageArea.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-yellow-100', 'text-yellow-800');
+                    messageArea.classList.add('bg-red-100', 'text-red-800');
+                    messageArea.textContent = dictionary[currentLang]['msg_error_fields'];
+                    resultsSection.classList.add('hidden');
+                    return;
+                }
+                
+                // Show Loading Message
+                messageArea.classList.remove('hidden', 'bg-red-100', 'text-red-800', 'bg-green-100', 'text-green-800');
+                messageArea.classList.add('bg-yellow-100', 'text-yellow-800');
+                messageArea.textContent = dictionary[currentLang]['msg_loading'];
+                resultsSection.classList.add('hidden');
+
+                // Simulate API call delay (2 seconds)
+                setTimeout(() => {
+                    // Update Results with user input
+                    const originText = document.querySelector(`#origin option[value="${origin}"]`).textContent.match(/\(([^)]+)\)/)[1];
+                    const destinationText = document.querySelector(`#destination option[value="${destination}"]`).textContent.match(/\(([^)]+)\)/)[1];
+
+                    flightRouteEl.textContent = `${originText} → ${destinationText}`;
+                    flightDatesEl.textContent = `${departDate} - ${returnDate}`;
+
+                    // Show Success Message
+                    messageArea.classList.remove('bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
+                    messageArea.classList.add('bg-green-100', 'text-green-800');
+                    messageArea.textContent = 'Search successful!';
+                    
+                    // Show Results
+                    resultsSection.classList.remove('hidden');
+
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
