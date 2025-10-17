@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Real-Time News Stream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f7f9; }
+        .stream-card { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+        .filter-btn { transition: background-color 0.1s; }
+        .news-item { transition: opacity 0.3s, transform 0.3s; }
+        /* Style for new items being inserted */
+        .new-item { animation: fadeInDown 0.5s ease-out; }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header and Controls -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b">
+            <div>
+                <h1 id="i18n-title" class="text-3xl font-extrabold text-gray-900" data-i18n="title">Real-Time News Stream</h1>
+                <p class="text-gray-500 mt-1" data-i18n="subtitle">Live feed with simulated sentiment analysis.</p>
+            </div>
+            <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+                <label for="language-select" class="text-sm font-medium text-gray-700" data-i18n="lang_label">Language:</label>
+                <select id="language-select" class="p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    <option value="en">English</option>
+                    <option value="ja">日本語</option>
+                    <option value="it">Italiano</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- Filter Sidebar -->
+            <div class="lg:col-span-1 bg-white stream-card rounded-xl p-6 h-fit sticky top-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4" data-i18n="label_filters">Filters</h3>
+
+                <div class="space-y-4">
+                    <!-- Sentiment Filter -->
+                    <div>
+                        <p class="font-medium text-gray-700 mb-2" data-i18n="label_sentiment">Sentiment:</p>
+                        <div id="sentiment-filters" class="flex flex-wrap gap-2">
+                            <button class="filter-btn sentiment-filter bg-green-500 text-white py-1 px-3 rounded-full text-sm font-medium" data-filter="positive">
+                                <span data-i18n="filter_positive">Positive</span>
+                            </button>
+                            <button class="filter-btn sentiment-filter bg-gray-200 text-gray-800 py-1 px-3 rounded-full text-sm font-medium hover:bg-gray-300" data-filter="neutral">
+                                <span data-i18n="filter_neutral">Neutral</span>
+                            </button>
+                            <button class="filter-btn sentiment-filter bg-gray-200 text-gray-800 py-1 px-3 rounded-full text-sm font-medium hover:bg-gray-300" data-filter="negative">
+                                <span data-i18n="filter_negative">Negative</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Reset Button -->
+                    <button id="reset-filters-btn" class="w-full text-blue-600 border border-blue-200 rounded-lg py-2 hover:bg-blue-50 transition" data-i18n="btn_reset">
+                        Reset Filters
+                    </button>
+                </div>
+
+                <hr class="my-6">
+
+                <!-- Stats Card -->
+                <div class="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                    <p class="text-xs text-gray-500 uppercase font-bold" data-i18n="stat_title">Overall Sentiment</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span id="sentiment-score" class="text-3xl font-extrabold text-yellow-700">65%</span>
+                        <span id="sentiment-trend" class="text-sm font-medium text-yellow-700" data-i18n="trend_mixed">Mixed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Stream Area -->
+            <div class="lg:col-span-3">
+                <div id="news-stream-container" class="space-y-4">
+                    <!-- Live news items will be inserted here -->
+                </div>
+                <div id="empty-message" class="hidden text-center p-10 bg-white rounded-xl text-gray-500" data-i18n="msg_empty">
+                    No news items match the current filter.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Translation Dictionary ---
+        const dictionary = {
+            'en': {
+                title: "Real-Time News Stream", subtitle: "Live feed with simulated sentiment analysis.", lang_label: "Language:",
+                label_filters: "Filters", label_sentiment: "Sentiment:", btn_reset: "Reset Filters",
+                filter_positive: "Positive", filter_neutral: "Neutral", filter_negative: "Negative",
+                stat_title: "Overall Sentiment", trend_mixed: "Mixed", trend_improving: "Improving", trend_declining: "Declining",
+                msg_empty: "No news items match the current filter.",
+                source_bloom: "Bloomberg", source_reut: "Reuters", source_wsj: "WSJ",
+            },
+            'ja': {
+                title: "リアルタイムニュースストリーム", subtitle: "感情分析をシミュレートしたライブフィード。", lang_label: "言語:",
+                label_filters: "フィルター", label_sentiment: "感情:", btn_reset: "フィルターをリセット",
+                filter_positive: "ポジティブ", filter_neutral: "中立", filter_negative: "ネガティブ",
+                stat_title: "全体的な感情", trend_mixed: "混合", trend_improving: "改善中", trend_declining: "悪化中",
+                msg_empty: "現在のフィルターに一致するニュースアイテムはありません。",
+                source_bloom: "ブルームバーグ", source_reut: "ロイター", source_wsj: "WSJ",
+            },
+            'it': {
+                title: "Flusso di Notizie in Tempo Reale", subtitle: "Feed live con analisi del sentiment simulata.", lang_label: "Lingua:",
+                label_filters: "Filtri", label_sentiment: "Sentiment:", btn_reset: "Ripristina Filtri",
+                filter_positive: "Positivo", filter_neutral: "Neutro", filter_negative: "Negativo",
+                stat_title: "Sentiment Generale", trend_mixed: "Misto", trend_improving: "In Miglioramento", trend_declining: "In Calo",
+                msg_empty: "Nessuna notizia corrisponde al filtro corrente.",
+                source_bloom: "Bloomberg", source_reut: "Reuters", source_wsj: "WSJ",
+            }
+        };
+
+        let currentLang = 'en';
+        let activeFilter = 'positive'; // Default filter
+        let newsItems = [];
+        let newsLimit = 20; // Maximum items to display
+
+        // --- News Data and Generator ---
+        const headlinePool = [
+            "Tech stock rally continues as chip demand surprises analysts.",
+            "Energy sector sees minor dips following OPEC+ output decision.",
+            "Global supply chain indicators show signs of easing congestion.",
+            "Central bank holds rates steady, citing stable inflation outlook.",
+            "Pharmaceutical giant announces major breakthrough in Alzheimer's research.",
+            "Commodity prices fluctuate on geopolitical uncertainty.",
+            "Retail sales disappoint, signaling cautious consumer spending.",
+            "Real estate market stabilizes after months of volatility.",
+            "Major bank reports record quarterly earnings, beats expectations.",
+            "Automaker stock downgraded due to slow EV production ramp-up."
+        ];
+
+        const sources = ['bloom', 'reut', 'wsj'];
+
+        const generateNewsItem = () => {
+            const sentimentChance = Math.random();
+            let sentiment = 'neutral';
+            if (sentimentChance < 0.35) sentiment = 'positive'; // 35% chance
+            else if (sentimentChance > 0.7) sentiment = 'negative'; // 30% chance (70% to 100%)
+            // Otherwise, it's neutral (35% chance)
+
+            return {
+                id: Date.now() + Math.random(),
+                headline: headlinePool[Math.floor(Math.random() * headlinePool.length)],
+                source: sources[Math.floor(Math.random() * sources.length)],
+                sentiment: sentiment,
+                timestamp: new Date()
+            };
+        };
+        
+        // --- Utility Functions ---
+
+        const formatTime = (date) => {
+            return date.toLocaleTimeString(currentLang, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        };
+        
+        const getSentimentIcon = (sentiment) => {
+            switch (sentiment) {
+                case 'positive': return { icon: '⬆️', color: 'text-green-600', bg: 'bg-green-100', text_key: 'filter_positive' };
+                case 'negative': return { icon: '⬇️', color: 'text-red-600', bg: 'bg-red-100', text_key: 'filter_negative' };
+                default: return { icon: '↔️', color: 'text-gray-600', bg: 'bg-gray-100', text_key: 'filter_neutral' };
+            }
+        };
+
+        // --- Rendering and Filtering ---
+
+        const renderNewsStream = () => {
+            const container = document.getElementById('news-stream-container');
+            const filteredItems = newsItems.filter(item => activeFilter === 'all' || item.sentiment === activeFilter);
+            
+            container.innerHTML = '';
+            
+            if (filteredItems.length === 0) {
+                 document.getElementById('empty-message').classList.remove('hidden');
+                 return;
+            } else {
+                 document.getElementById('empty-message').classList.add('hidden');
+            }
+
+            filteredItems.forEach(item => {
+                const sentimentProps = getSentimentIcon(item.sentiment);
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.id = `news-item-${item.id}`;
+                itemDiv.className = `news-item stream-card bg-white rounded-xl p-5 border-l-4 border-l-${sentimentProps.color.replace('text-', '')}`;
+                
+                // Add the new-item class temporarily for the animation
+                itemDiv.classList.add('new-item');
+                setTimeout(() => itemDiv.classList.remove('new-item'), 500);
+
+                itemDiv.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <p class="text-sm text-gray-500">${formatTime(item.timestamp)}</p>
+                        <span class="text-xs font-medium ${sentimentProps.color} ${sentimentProps.bg} px-2 py-0.5 rounded-full flex items-center">
+                            ${sentimentProps.icon} <span class="ml-1">${dictionary[currentLang][sentimentProps.text_key]}</span>
+                        </span>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-800 mt-2">${item.headline}</h4>
+                    <p class="text-xs text-blue-500 mt-2 font-medium" data-i18n-source="${item.source}">${dictionary[currentLang][`source_${item.source}`]}</p>
+                `;
+                container.appendChild(itemDiv);
+            });
+        };
+
+        const updateStats = () => {
+            const total = newsItems.length;
+            if (total === 0) return;
+
+            const positiveCount = newsItems.filter(item => item.sentiment === 'positive').length;
+            const score = Math.round((positiveCount / total) * 100);
+
+            const scoreEl = document.getElementById('sentiment-score');
+            const trendEl = document.getElementById('sentiment-trend');
+            
+            scoreEl.textContent = `${score}%`;
+            
+            // Simplified trend logic
+            let trendKey = 'trend_mixed';
+            let trendColor = 'text-yellow-700';
+            if (score > 70) {
+                trendKey = 'trend_improving';
+                trendColor = 'text-green-700';
+            } else if (score < 40) {
+                trendKey = 'trend_declining';
+                trendColor = 'text-red-700';
+            }
+            
+            trendEl.textContent = dictionary[currentLang][trendKey];
+            scoreEl.classList.remove('text-yellow-700', 'text-green-700', 'text-red-700');
+            scoreEl.classList.add(trendColor);
+            trendEl.classList.remove('text-yellow-700', 'text-green-700', 'text-red-700');
+            trendEl.classList.add(trendColor);
+        }
+
+        // --- Core Functions ---
+
+        const handleNewItem = (item) => {
+            newsItems.unshift(item); // Add to the front
+            // Keep only the latest items
+            if (newsItems.length > newsLimit) {
+                newsItems.pop(); 
+            }
+            
+            renderNewsStream();
+            updateStats();
+        };
+
+        const setActiveFilter = (filter) => {
+            activeFilter = filter;
+            document.querySelectorAll('.sentiment-filter').forEach(btn => {
+                const isActive = btn.dataset.filter === filter;
+                btn.classList.toggle('bg-green-500', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('bg-gray-200', !isActive);
+                btn.classList.toggle('text-gray-800', !isActive);
+                btn.classList.toggle('hover:bg-gray-300', !isActive);
+            });
+            renderNewsStream();
+        };
+
+        // --- Main Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initial News Data (Pre-fill the stream)
+            for (let i = 0; i < 5; i++) {
+                newsItems.push(generateNewsItem());
+            }
+            // Sort by time (newest first)
+            newsItems.sort((a, b) => b.timestamp - a.timestamp); 
+            
+            // 2. Setup Language Listener
+            document.getElementById('language-select').addEventListener('change', (e) => updateLanguage(e.target.value));
+
+            // 3. Setup Filter Listeners
+            document.querySelectorAll('.sentiment-filter').forEach(btn => {
+                btn.addEventListener('click', () => setActiveFilter(btn.dataset.filter));
+            });
+            document.getElementById('reset-filters-btn').addEventListener('click', () => setActiveFilter('all'));
+
+            // 4. Start the Simulated Real-Time Feed
+            setInterval(() => {
+                handleNewItem(generateNewsItem());
+            }, 5000); // New item every 5 seconds
+
+            // 5. Initial Load
+            setActiveFilter('all'); // Initially show all, but visually highlight positive filter
+            updateLanguage('en'); 
+        });
+    </script>
+</body>
+</html>
