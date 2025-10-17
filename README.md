@@ -1,1 +1,1 @@
-- 🌐 **Live Demo:** [https://rikiza89.github.io/sample-html-pages/](https://rikiza89.github.io/sample-html-pages/)
+- 🌐 **Live Demo:** (https://rikiza89.github.io/sample-html-pages/)
