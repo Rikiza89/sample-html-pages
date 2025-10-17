@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title">Product Configurator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7fbf8; }
+        .config-card { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); }
+        .option-tile { 
+            cursor: pointer; 
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .option-tile:hover { 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .option-selected {
+            border-color: #3b82f6; /* Blue border */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); /* Blue ring */
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+
+    <div class="max-w-5xl mx-auto config-card bg-white rounded-2xl grid grid-cols-1 lg:grid-cols-2 shadow-xl overflow-hidden">
+        
+        <!-- Product Visualization Area -->
+        <div class="p-6 lg:p-10 bg-gray-50 flex flex-col justify-between">
+            <header class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-extrabold text-gray-800" data-i18n="product_name">AeroPress Pro X</h1>
+                <div class="flex items-center space-x-2">
+                    <label for="language-select" class="text-sm font-medium text-gray-700" data-i18n="lang_label">Language:</label>
+                    <select id="language-select" class="p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm">
+                        <option value="en">English</option>
+                        <option value="ja">日本語 (Japanese)</option>
+                        <option value="it">Italiano (Italian)</option>
+                    </select>
+                </div>
+            </header>
+            
+            <!-- Dynamic Image Placeholder -->
+            <div id="product-image-container" class="flex justify-center items-center h-64 bg-gray-200 rounded-xl mb-6">
+                <p id="product-image-text" class="text-gray-600 text-lg font-semibold" data-i18n="image_placeholder">Showing: Silver Machine</p>
+                <!-- Placeholder image for visual complexity -->
+                <img id="product-img" src="https://placehold.co/400x400/10b981/ffffff?text=Coffee+Maker" onerror="this.style.display='none'; document.getElementById('product-image-text').style.display='block';" style="display:none;" />
+            </div>
+
+            <div id="configuration-summary" class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-800" data-i18n="summary_title">Your Configuration:</h3>
+                <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                    <li id="summary-color" data-i18n="summary_color">Color: Cosmic Silver</li>
+                    <li id="summary-material" data-i18n="summary_material">Material: Stainless Steel</li>
+                    <li id="summary-heater" data-i18n="summary_heater">Heater: Standard (Included)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Configuration Options Area -->
+        <div class="p-6 lg:p-10 space-y-8">
+            
+            <!-- 1. Color Options -->
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3" data-i18n="label_color">1. Choose Color</h3>
+                <div id="color-options" class="grid grid-cols-3 gap-4">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- 2. Material Options -->
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3" data-i18n="label_material">2. Select Material</h3>
+                <div id="material-options" class="grid grid-cols-2 gap-4">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- 3. Heating Element (Interdependent Option) -->
+            <div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3" data-i18n="label_heater">3. Add-on Heater</h3>
+                <div id="heater-options" class="space-y-3">
+                    <!-- Options injected here -->
+                </div>
+            </div>
+
+            <!-- Final Price and Action -->
+            <div class="border-t pt-6 mt-6 flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-gray-500 font-medium uppercase" data-i18n="total_label">Total Price:</p>
+                    <p id="final-price" class="text-4xl font-extrabold text-green-600 transition duration-300">$499.00</p>
+                </div>
+                <button id="add-to-cart-btn" class="bg-green-600 text-white font-semibold py-4 px-8 rounded-xl hover:bg-green-700 transition transform hover:scale-105" data-i18n="btn_add_to_cart">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Product State and Options ---
+        const BASE_PRICE = 499.00;
+        let configState = {
+            basePrice: BASE_PRICE,
+            color: 'silver',
+            material: 'steel',
+            heater: 'standard',
+            totalPrice: BASE_PRICE
+        };
+
+        const options = {
+            color: {
+                silver: { price: 0, text_en: "Cosmic Silver", text_ja: "コスミックシルバー", text_it: "Argento Cosmico", class: "bg-gray-300" },
+                black: { price: 15, text_en: "Matte Black", text_ja: "マットブラック", text_it: "Nero Opaco", class: "bg-gray-800 text-white" },
+                red: { price: 30, text_en: "Volcano Red", text_ja: "ボルカノレッド", text_it: "Rosso Vulcano", class: "bg-red-600 text-white" }
+            },
+            material: {
+                steel: { price: 0, text_en: "Stainless Steel", text_ja: "ステンレス鋼", text_it: "Acciaio Inossidabile" },
+                ceramic: { price: 75, text_en: "Ceramic Finish (+ $75)", text_ja: "セラミック仕上げ (+ $75)", text_it: "Finitura Ceramica (+ $75)" }
+            },
+            heater: {
+                standard: { price: 0, text_en: "Standard (Included)", text_ja: "標準 (込み)", text_it: "Standard (Incluso)" },
+                turbo: { price: 120, text_en: "Turbo Heater (+ $120)", text_ja: "ターボヒーター (+ $120)", text_it: "Riscaldatore Turbo (+ $120)" }
+            }
+        };
+
+        // --- Translation Dictionary ---
+        const dictionary = {
+            'en': {
+                title: "Product Configurator", lang_label: "Language:", product_name: "AeroPress Pro X",
+                label_color: "1. Choose Color", label_material: "2. Select Material", label_heater: "3. Add-on Heater",
+                total_label: "Total Price:", btn_add_to_cart: "Add to Cart",
+                summary_title: "Your Configuration:", summary_color: "Color:", summary_material: "Material:", summary_heater: "Heater:",
+                image_placeholder: "Showing: Cosmic Silver Machine",
+            },
+            'ja': {
+                title: "製品コンフィギュレーター", lang_label: "言語:", product_name: "エアロプレス プロ X",
+                label_color: "1. 色を選択", label_material: "2. 素材を選択", label_heater: "3. 追加ヒーター",
+                total_label: "合計金額:", btn_add_to_cart: "カートに追加",
+                summary_title: "お客様の設定:", summary_color: "色:", summary_material: "素材:", summary_heater: "ヒーター:",
+                image_placeholder: "表示中: コスミックシルバー",
+            },
+            'it': {
+                title: "Configuratore Prodotto", lang_label: "Lingua:", product_name: "AeroPress Pro X",
+                label_color: "1. Scegli Colore", label_material: "2. Seleziona Materiale", label_heater: "3. Elemento Riscaldante Aggiuntivo",
+                total_label: "Prezzo Totale:", btn_add_to_cart: "Aggiungi al Carrello",
+                summary_title: "La Tua Configurazione:", summary_color: "Colore:", summary_material: "Materiale:", summary_heater: "Riscaldatore:",
+                image_placeholder: "Visualizzazione: Macchina Argento Cosmico",
+            }
+        };
+        let currentLang = 'en';
+
+        // --- Utility Functions ---
+
+        const formatPrice = (price) => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
+        };
+
+        const calculatePrice = () => {
+            let newPrice = configState.basePrice;
+            newPrice += options.color[configState.color].price;
+            newPrice += options.material[configState.material].price;
+            newPrice += options.heater[configState.heater].price;
+            configState.totalPrice = newPrice;
+        };
+        
+        const updateUI = () => {
+            calculatePrice();
+            
+            // 1. Update Price
+            document.getElementById('final-price').textContent = formatPrice(configState.totalPrice);
+
+            // 2. Update Summary
+            const getColorText = (key) => options.color[key][`text_${currentLang}`].replace(/ \(\+ \$[0-9]+\)/, '');
+            const getMaterialText = (key) => options.material[key][`text_${currentLang}`];
+            const getHeaterText = (key) => options.heater[key][`text_${currentLang}`];
+
+            document.getElementById('summary-color').textContent = `${dictionary[currentLang]['summary_color']} ${getColorText(configState.color)}`;
+            document.getElementById('summary-material').textContent = `${dictionary[currentLang]['summary_material']} ${getMaterialText(configState.material)}`;
+            document.getElementById('summary-heater').textContent = `${dictionary[currentLang]['summary_heater']} ${getHeaterText(configState.heater)}`;
+
+            // 3. Update Image Placeholder Text
+            document.getElementById('product-image-text').textContent = `${dictionary[currentLang]['image_placeholder'].split(':')[0]}: ${getColorText(configState.color)} Machine`;
+
+            // 4. Update Option Selection Highlighting
+            Object.keys(options).forEach(category => {
+                document.querySelectorAll(`#${category}-options .option-tile`).forEach(tile => {
+                    tile.classList.remove('option-selected');
+                    if (tile.dataset.optionValue === configState[category]) {
+                        tile.classList.add('option-selected');
+                    }
+                });
+            });
+        };
+
+        const handleOptionClick = (category, value) => {
+            if (configState[category] !== value) {
+                configState[category] = value;
+                updateUI();
+            }
+        };
+
+        const renderOptions = () => {
+            // Render Color Options
+            const colorContainer = document.getElementById('color-options');
+            colorContainer.innerHTML = '';
+            Object.entries(options.color).forEach(([key, data]) => {
+                const tile = document.createElement('div');
+                tile.className = `option-tile p-4 text-center rounded-xl config-card ${data.class}`;
+                tile.dataset.optionValue = key;
+                tile.dataset.optionCategory = 'color';
+                tile.innerHTML = `<p class="font-semibold text-sm">${data[`text_${currentLang}`]}</p>`;
+                tile.addEventListener('click', () => handleOptionClick('color', key));
+                colorContainer.appendChild(tile);
+            });
+
+            // Render Material Options
+            const materialContainer = document.getElementById('material-options');
+            materialContainer.innerHTML = '';
+            Object.entries(options.material).forEach(([key, data]) => {
+                const tile = document.createElement('div');
+                tile.className = `option-tile p-4 rounded-xl config-card bg-gray-100 text-gray-800`;
+                tile.dataset.optionValue = key;
+                tile.dataset.optionCategory = 'material';
+                tile.innerHTML = `<p class="font-semibold text-sm">${data[`text_${currentLang}`]}</p><p class="text-xs text-gray-500">${data.price > 0 ? formatPrice(data.price) : dictionary[currentLang]['summary_heater'].split(':')[1].trim()}</p>`;
+                tile.addEventListener('click', () => handleOptionClick('material', key));
+                materialContainer.appendChild(tile);
+            });
+
+            // Render Heater Options
+            const heaterContainer = document.getElementById('heater-options');
+            heaterContainer.innerHTML = '';
+            Object.entries(options.heater).forEach(([key, data]) => {
+                const tile = document.createElement('div');
+                tile.className = `option-tile p-4 rounded-xl config-card bg-gray-100 text-gray-800`;
+                tile.dataset.optionValue = key;
+                tile.dataset.optionCategory = 'heater';
+                tile.innerHTML = `<p class="font-semibold">${data[`text_${currentLang}`]}</p>`;
+                tile.addEventListener('click', () => handleOptionClick('heater', key));
+                heaterContainer.appendChild(tile);
+            });
+        };
+
+
+        const updateLanguage = (lang) => {
+            currentLang = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary[lang] && dictionary[lang][key]) {
+                    el.textContent = dictionary[lang][key];
+                }
+            });
+            document.documentElement.lang = lang;
+            renderOptions(); // Re-render to update option texts
+            updateUI(); // Update summary text
+        };
+
+        // --- Main Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Language selector setup
+            document.getElementById('language-select').addEventListener('change', (e) => updateLanguage(e.target.value));
+
+            // Initial render and setup
+            updateLanguage('en'); 
+
+            // Add to Cart Simulation
+            document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+                const currentText = document.getElementById('add-to-cart-btn').textContent;
+                document.getElementById('add-to-cart-btn').textContent = "Adding...";
+                document.getElementById('add-to-cart-btn').disabled = true;
+                
+                setTimeout(() => {
+                    document.getElementById('add-to-cart-btn').textContent = "✅ Added!";
+                    document.getElementById('add-to-cart-btn').classList.remove('bg-green-600', 'hover:bg-green-700');
+                    document.getElementById('add-to-cart-btn').classList.add('bg-blue-600');
+                    
+                    // Reset after a moment
+                    setTimeout(() => {
+                        document.getElementById('add-to-cart-btn').textContent = currentText;
+                        document.getElementById('add-to-cart-btn').disabled = false;
+                        document.getElementById('add-to-cart-btn').classList.remove('bg-blue-600');
+                        document.getElementById('add-to-cart-btn').classList.add('bg-green-600', 'hover:bg-green-700');
+                    }, 1500);
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
