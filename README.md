@@ -1,1 +1,1 @@
-👉 [DEMO (Main Repository)](https://github.com/Rikiza89/YOLO-tracking-speed)
+- 🌐 **Live Demo:** [https://rikiza89.github.io/sample-html-pages/](https://rikiza89.github.io/sample-html-pages/)
