@@ -1,0 +1,352 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>System Alert — CRITICAL</title>
+  <style>
+    /* Reset & base */
+    html,body{height:100%;margin:0;background:#000;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    .wrap{position:relative;height:100vh;overflow:hidden}
+
+    /* Matrix rain */
+    canvas#matrix{position:absolute;inset:0;z-index:1;opacity:0.08}
+
+    /* Background noise grid */
+    .bg{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(255,0,0,0.08) 0%, rgba(0,0,0,0.65) 40%), linear-gradient(180deg,#060606 0%, #000 100%);filter:contrast(1.25) saturate(1.05);z-index:2}
+    .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,0,0.18),transparent);animation:scan 5s linear infinite;mix-blend-mode:screen;z-index:7}
+    @keyframes scan{0%{top:-10%}50%{top:110%}100%{top:-10%}}
+
+    /* big warning */
+    .warning{position:absolute;left:50%;top:6%;transform:translateX(-50%);text-align:center;z-index:20}
+    .warning h1{font-size:6vmin;margin:0;letter-spacing:4px;color:#ff3b3b;text-shadow:0 0 40px rgba(255,59,59,0.45)}
+    .warning p{opacity:.95;margin-top:6px;font-size:2.2vmin;color:#ff9b9b}
+
+    /* glitch text */
+    .glitch{font-weight:900;font-size:12vmin;position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);z-index:21;mix-blend-mode:screen}
+    .glitch span{position:relative;display:inline-block}
+    .glitch span::before,.glitch span::after{content:attr(data-text);position:absolute;left:0;top:0}
+    .glitch span::before{color:#0ff;clip-path:inset(0 0 60% 0);transform:translate(2px,-2px);opacity:0.85;mix-blend-mode:screen;animation:glitch1 1.6s infinite}
+    .glitch span::after{color:#f0f;clip-path:inset(40% 0 0 0);transform:translate(-2px,2px);opacity:0.8;mix-blend-mode:screen;animation:glitch2 2.1s infinite}
+    @keyframes glitch1{0%{transform:translate(2px,-2px)}25%{transform:translate(-6px,4px)}50%{transform:translate(4px,-3px)}75%{transform:translate(-2px,2px)}100%{transform:translate(2px,-2px)}}
+    @keyframes glitch2{0%{transform:translate(-2px,2px)}25%{transform:translate(6px,-4px)}50%{transform:translate(-3px,3px)}75%{transform:translate(2px,-2px)}100%{transform:translate(-2px,2px)}}
+
+    /* skull */
+    .skull{position:absolute;right:6vmin;top:18vmin;width:220px;height:220px;z-index:22;opacity:0.95;filter:drop-shadow(0 14px 30px rgba(255,0,0,0.08));transform-origin:center;animation:skullFloat 5.5s ease-in-out infinite}
+    @keyframes skullFloat{0%{transform:translateY(0) rotate(0)}40%{transform:translateY(18px) rotate(-4deg) scale(1.03)}60%{transform:translateY(22px) rotate(6deg) scale(.96)}100%{transform:translateY(0) rotate(0)}}
+
+    /* console log / terminal */
+    .term{position:absolute;left:3vmin;bottom:3vmin;width:46vmin;max-width:70%;min-width:320px;background:rgba(0,0,0,0.72);border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:12px;backdrop-filter:blur(6px);z-index:23}
+    .term pre{margin:0;line-height:1.35;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.6vmin;color:#74ff8a;white-space:pre-wrap}
+    .cursor{display:inline-block;width:8px;height:14px;background:#74ff8a;vertical-align:bottom;margin-left:6px;animation:blink .9s steps(1) infinite}
+
+    /* progress bar */
+    .bar-wrap{position:absolute;right:3vmin;bottom:3vmin;width:40vmin;min-width:320px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,0,0,0.02));border-radius:12px;padding:12px;border:1px solid rgba(255,0,0,0.14);z-index:23}
+    .bar{height:16px;background:repeating-linear-gradient(90deg,rgba(255,0,0,0.55),rgba(255,80,80,0.95) 12px, rgba(255,20,20,0.4) 12px, rgba(255,80,80,0.95) 24px);width:0;border-radius:12px;box-shadow:0 0 60px rgba(255,0,0,0.25) inset}
+    .bar-label{font-size:1.6vmin;margin-bottom:8px;color:#ffb5b5}
+
+    /* heart swarm - sinking */
+    .hearts{position:absolute;left:50%;top:62%;transform:translateX(-50%);z-index:24;pointer-events:none}
+    .heart{font-size:10vmin;line-height:1;display:inline-block;margin:0 6px;filter:drop-shadow(0 10px 28px rgba(0,0,0,0.7));animation:sink 6s ease-in-out infinite, heartbeat .88s ease-in-out 0s infinite;will-change:transform,opacity}
+    .heart:nth-child(2){font-size:7vmin;animation-delay:0.2s}
+    .heart:nth-child(3){font-size:8vmin;animation-delay:0.5s}
+    @keyframes sink{0%{transform:translateY(0) scale(1)}40%{transform:translateY(26vh) scale(.9);opacity:0.96}60%{transform:translateY(30vh) scale(.78);opacity:0.5}100%{transform:translateY(0) scale(1);opacity:1}}
+    @keyframes heartbeat{0%{transform:scale(1)}35%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+    /* shards flying */
+    .shard{position:absolute;background:linear-gradient(90deg,rgba(255,60,60,0.98),rgba(255,180,180,0.7));width:8px;height:26px;opacity:0.85;z-index:25;filter:blur(.6px);transform-origin:center;border-radius:2px}
+
+    /* shaking screen */
+    .shake{position:absolute;inset:0;z-index:30;pointer-events:none}
+
+    /* flicker overlay */
+    .flicker{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,0,0,0.04),transparent);mix-blend-mode:screen;z-index:19;animation:flick 0.36s linear infinite}
+    @keyframes flick{0%{opacity:0.02}20%{opacity:0.14}40%{opacity:0.01}60%{opacity:0.18}100%{opacity:0.03}}
+
+    /* corrupted modal cluster */
+    .popup-cluster{position:absolute;left:6%;top:8%;z-index:27;display:flex;flex-direction:column;gap:12px}
+    .popup{background:linear-gradient(180deg,rgba(20,0,0,0.95),rgba(0,0,0,0.9));border:1px solid rgba(255,0,0,0.22);padding:14px;border-radius:8px;width:360px;backdrop-filter:blur(6px);box-shadow:0 14px 60px rgba(0,0,0,0.7)}
+    .popup h3{margin:0;font-size:1.8vmin;color:#ff8b8b}
+    .popup p{margin:8px 0 0;font-size:1.3vmin;color:#ffbebe}
+    .btn{display:inline-block;margin-top:10px;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff;font-weight:800;cursor:pointer}
+
+    /* screen tear */
+    .tear{position:absolute;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,rgba(255,0,0,0.18),transparent);mix-blend-mode:overlay;opacity:0.8;z-index:26;animation:tear 6.4s linear infinite}
+    @keyframes tear{0%{top:-5%}50%{top:50%}100%{top:105%}}
+
+    /* tiny red text overlay */
+    .overlay-text{position:absolute;left:5vmin;top:3vmin;font-family:ui-monospace,monospace;font-size:1.1vmin;color:#ff8b8b;z-index:28;opacity:0.95}
+
+    /* fullscreen red pulse */
+    .pulse{position:absolute;inset:0;background:radial-gradient(circle at 50% 20%, rgba(255,0,0,0.06), rgba(255,0,0,0.03) 20%, transparent 40%);z-index:29;mix-blend-mode:screen;animation:pulse 2.6s ease-in-out infinite}
+    @keyframes pulse{0%{opacity:0.02}50%{opacity:0.18;transform:scale(1.01)}100%{opacity:0.02}}
+
+    /* accessibility small screens */
+    @media (max-width:520px){
+      .glitch{font-size:22vmin;top:22%}
+      .term, .bar-wrap{width:86%;left:7%;right:7%}
+      .popup{right:4%;left:4%;width:auto}
+      .warning h1{font-size:8vmin}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="img" aria-label="Simulation of system breach with glitchy visuals">
+    <canvas id="matrix"></canvas>
+    <div class="bg"></div>
+    <div class="scan-line" style="animation-delay:0s"></div>
+    <div class="scan-line" style="animation-delay:1.2s"></div>
+    <div class="scan-line" style="animation-delay:2.6s"></div>
+
+    <div class="warning" aria-hidden>
+      <h1>CRITICAL SYSTEM BREACH</h1>
+      <p>Unauthorized process detected — initiating containment protocols</p>
+    </div>
+
+    <div class="glitch" aria-hidden><span data-text="SYSTEM">SYSTEM</span></div>
+
+    <svg class="skull" viewBox="0 0 100 100" aria-hidden>
+      <defs>
+        <radialGradient id="g" cx="50%" cy="35%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.95"/>
+          <stop offset="100%" stop-color="#ff0000" stop-opacity="0.18"/>
+        </radialGradient>
+      </defs>
+      <g fill="url(#g)">
+        <path d="M50 6c-14 0-26 9-28 22-1 6 0 11 0 11-8 0-14 7-14 15v8c0 11 9 20 20 20h44c11 0 20-9 20-20v-8c0-8-6-15-14-15 0 0 1-5 0-11C76 15 64 6 50 6z"/>
+        <circle cx="36" cy="46" r="6"/>
+        <circle cx="64" cy="46" r="6"/>
+        <rect x="40" y="62" width="20" height="6" rx="2"/>
+      </g>
+    </svg>
+
+    <div class="hearts" aria-hidden>
+      <div class="heart">❤</div>
+      <div class="heart">❤</div>
+      <div class="heart">❤</div>
+    </div>
+
+    <div class="term" id="term" aria-live="polite" aria-atomic="false">
+      <pre id="console"></pre>
+    </div>
+
+    <div class="bar-wrap" aria-hidden>
+      <div class="bar-label">Payload transfer — 0%</div>
+      <div style="background:rgba(0,0,0,0.22);padding:6px;border-radius:8px;">
+        <div class="bar" id="bar"></div>
+      </div>
+    </div>
+
+    <div class="popup-cluster" id="cluster">
+      <div class="popup" id="p1"><h3>Security Notice</h3><p>Critical files are being analyzed. UI elements may flicker. Simulation mode: ACTIVE.</p><button class="btn" id="dismiss1">Close</button></div>
+      <div class="popup" id="p2"><h3>Process Alert</h3><p>Background process "sys.heart" modifying UI textures...</p><button class="btn" id="dismiss2">Terminate</button></div>
+    </div>
+
+    <div class="tear" style="animation-delay:0.8s"></div>
+    <div class="tear" style="animation-delay:2.2s"></div>
+
+    <div class="overlay-text">/dev/sim/trace — 0x8f3b… ERROR LEVEL: CRITICAL</div>
+    <div class="flicker"></div>
+    <div class="pulse"></div>
+    <div class="shake"></div>
+  </div>
+
+  <script>
+    // Avoid auto-run audio/animations if user prefers reduced motion or when audio locked
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // MATRIX RAIN
+    (function matrix(){
+      const c = document.getElementById('matrix');
+      const ctx = c.getContext('2d');
+      function resize(){ c.width = innerWidth; c.height = innerHeight; cols = Math.floor(c.width/12); ypos.length = 0; for(let i=0;i<cols;i++) ypos.push(Math.random()*-1000); }
+      let cols = 0; const ypos = [];
+      window.addEventListener('resize', resize); resize();
+      function draw(){
+        ctx.fillStyle = 'rgba(0,0,0,0.06)';
+        ctx.fillRect(0,0,c.width,c.height);
+        ctx.fillStyle = '#0f0';
+        ctx.font = '13px monospace';
+        ypos.forEach((y,idx)=>{
+          const text = String.fromCharCode(0x30A0 + Math.random()*96 | 0);
+          const x = idx*12;
+          ctx.fillText(text,x,y);
+          if(y > 100 + Math.random()*10000) ypos[idx]=Math.random()*-1000; else ypos[idx]=y+14;
+        });
+        requestAnimationFrame(draw);
+      }
+      if(!reduce) draw();
+    })();
+
+    // shards generator (heavier)
+    function spawnShard(){
+      const s = document.createElement('div');
+      s.className = 'shard';
+      document.body.appendChild(s);
+      const startX = Math.random()*innerWidth;
+      const startY = -40 - Math.random()*80;
+      s.style.left = startX+'px'; s.style.top = startY+'px';
+      s.style.transform = `rotate(${Math.random()*360}deg)`;
+      const dur = 1800 + Math.random()*3000;
+      const endX = startX + (Math.random()-0.5)*innerWidth*0.9;
+      const endY = innerHeight + 120;
+      s.animate([{transform:`translate(0,0) rotate(${Math.random()*360}deg)`, opacity:1}, {transform:`translate(${endX-startX}px,${endY-startY}px) rotate(${Math.random()*1200}deg)`, opacity:0}],{duration:dur, easing:'cubic-bezier(.2,.9,.2,1)'});
+      setTimeout(()=>s.remove(), dur+120);
+    }
+    if(!reduce) setInterval(spawnShard, 360);
+
+    // Console simulation lines (scary & expanded)
+    const lines = [
+      'Initializing kernel hooks...',
+      'Accessing cached credentials...',
+      'Bypassing sandbox v5...',
+      'Injecting cardiac anomaly...',
+      'Enumerating open sockets...',
+      'Mounting virtual filesystem...',
+      'Encrypting user temp...',
+      'Dispatching payload fragments...',
+      'Establishing persistent beacon...',
+      'Tearing down safe guards...',
+      'Overwriting UI registry...',
+      'Forking phantom worker threads...',
+      'Seeding random crashes...',
+      'Triggering panic routine: HEARTBEAT++',
+      'Activating screen distortions...'
+    ];
+
+    const consoleEl = document.getElementById('console');
+    const bar = document.getElementById('bar');
+    const barLabel = document.querySelector('.bar-label');
+    let percent = 0;
+
+    function typeLine(text, speed = 7){
+      return new Promise(res => {
+        let i = 0;
+        const t = setInterval(()=>{
+          consoleEl.textContent += text[i] || '';
+          i++;
+          consoleEl.parentElement.scrollTop = consoleEl.parentElement.scrollHeight;
+          if(i>text.length){ clearInterval(t); consoleEl.textContent += ''; setTimeout(res, 140); }
+        }, speed);
+      });
+    }
+
+    // WebAudio for ambient growl + blips (starts on user gesture in many browsers)
+    let audioCtx, master, osc, blip, blipGain;
+    function initAudio(){
+      try{
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        master = audioCtx.createGain(); master.gain.value = 0.03; master.connect(audioCtx.destination);
+        osc = audioCtx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 28; const oscGain = audioCtx.createGain(); oscGain.gain.value = 0.25; osc.connect(oscGain); oscGain.connect(master); osc.start();
+        blip = audioCtx.createOscillator(); blip.type='sawtooth'; blip.frequency.value=380; blipGain = audioCtx.createGain(); blipGain.gain.value=0; blip.connect(blipGain); blipGain.connect(master); blip.start();
+      }catch(e){/*audio locked or unsupported*/}
+    }
+
+    async function runSequence(){
+      if(!reduce) initAudio();
+
+      for(let j=0;j<lines.length;j++){
+        await typeLine('> ' + lines[j]);
+        // increment bar
+        percent += Math.floor(8 + Math.random()*14);
+        if(percent>100) percent = 100;
+        bar.style.width = percent + '%';
+        barLabel.textContent = 'Payload transfer — ' + percent + '%';
+
+        // audio behavior (if available)
+        if(audioCtx && osc){
+          osc.frequency.setTargetAtTime(28 + percent*1.4, audioCtx.currentTime, 0.25);
+          blipGain && blipGain.gain.cancelScheduledValues(audioCtx.currentTime);
+          if(blipGain){
+            blipGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            blipGain.gain.linearRampToValueAtTime(0.08 + percent/160, audioCtx.currentTime + 0.02);
+            blip.frequency && blip.frequency.setTargetAtTime(320 + percent*6, audioCtx.currentTime, 0.02);
+            setTimeout(()=>{ blipGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.12); }, 160 + Math.random()*520);
+          }
+        }
+
+        // skull pulse + skew
+        const skull = document.querySelector('.skull');
+        if(skull) skull.style.transform = `scale(${1 + percent/500}) translateY(${(percent/100)*14}px) rotate(${(percent/100)*6}deg)`;
+
+        // shards spawn more aggressively as percent rises
+        if(!reduce){
+          const spawnCount = percent>65 ? 6 : percent>40 ? 3 : 1;
+          for(let s=0;s<spawnCount;s++) spawnShard();
+        }
+
+        // accelerate hearts
+        document.querySelectorAll('.heart').forEach(h=>{
+          const sinkDur = Math.max(2.6, 6 - percent/20);
+          const beatDur = Math.max(0.28, 0.88 - percent/180);
+          h.style.animationDuration = sinkDur + 's, ' + beatDur + 's';
+        });
+
+        // small screen jolt occasionally
+        if(Math.random() > 0.75) document.querySelector('.shake').style.transform = `translate(${(Math.random()-0.5)*8}px, ${(Math.random()-0.5)*8}px) rotate(${(Math.random()-0.5)*0.8}deg)`;
+
+        await new Promise(r=>setTimeout(r, 220 + Math.random()*640));
+      }
+
+      // flooding
+      for(let k=0;k<28;k++){
+        await typeLine('> ' + 'Fragment #' + (k+1) + ' -> ' + (Math.random()*100000|0));
+        if(!reduce && k%2===0) for(let s=0;s<2;s++) spawnShard();
+      }
+
+      // final terror sequence
+      percent = 100; bar.style.width = '100%'; barLabel.textContent = 'Payload transfer — complete';
+      consoleEl.textContent += '> Process complete. Rewriting UI textures...';
+
+      // audio escalation
+      if(master) master.gain.setTargetAtTime(0.06, audioCtx.currentTime, 0.02);
+      setTimeout(()=>{ if(master) master.gain.setTargetAtTime(0.015, audioCtx.currentTime, 0.6); }, 1800);
+
+      // heavy screen shake loop
+      if(!reduce) setInterval(()=>{
+        document.querySelector('.shake').style.transform = `translate(${(Math.random()-0.5)*28}px, ${(Math.random()-0.5)*28}px) rotate(${(Math.random()-0.5)*3.2}deg)`;
+      }, 60);
+
+      // burst of shards + popup spam
+      if(!reduce){
+        for(let i=0;i<18;i++){ spawnShard(); }
+        spamPopups(6);
+      }
+    }
+
+    runSequence();
+
+    // safer popup spam function
+    function spamPopups(n){
+      const cluster = document.getElementById('cluster');
+      for(let i=0;i<n;i++){
+        setTimeout(()=>{
+          const p = document.createElement('div');
+          p.className='popup';
+          p.innerHTML = `<h3>WARNING</h3><p>System integrity failing — frame ${i+1}</p><button class="btn">OK</button>`;
+          p.style.opacity = 0; p.style.transform = 'translateY(-10px) rotate(' + (Math.random()*6-3) + 'deg)';
+          cluster.appendChild(p);
+          p.animate([{opacity:0, transform:p.style.transform},{opacity:1, transform:'translateY(0) rotate(0)'}],{duration:420, easing:'cubic-bezier(.2,.9,.2,1)'});
+        }, 140*i);
+      }
+    }
+
+    // Dismiss buttons - safe resets
+    document.getElementById('dismiss1').addEventListener('click', ()=>{ document.getElementById('p1').style.display='none'; consoleEl.textContent += '[User closed notice]'; });
+    document.getElementById('dismiss2').addEventListener('click', ()=>{ document.getElementById('p2').style.display='none'; consoleEl.textContent += '[User terminated process]'; });
+
+    // spawn a few initial shards
+    for(let i=0;i<8;i++) setTimeout(spawnShard, i*120);
+
+    // stop animations on prefers-reduced-motion
+    if(reduce){ document.querySelectorAll('*').forEach(el=>el.style.animation='none'); }
+
+    // user gesture to unlock audio in browsers that block autoplay
+    function unlockAudio(){ if(!audioCtx) initAudio(); try{ if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); }catch(e){}
+      window.removeEventListener('pointerdown', unlockAudio); window.removeEventListener('keydown', unlockAudio);
+    }
+    window.addEventListener('pointerdown', unlockAudio); window.addEventListener('keydown', unlockAudio);
+  </script>
+</body>
+</html>
